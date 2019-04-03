@@ -1,0 +1,11 @@
+import excel using order_products.cvs
+save order_products.dta
+import products.cvs, clear
+merge 1:1 product_id using “order_products.dta”
+
+egen number_of_orders =count(product_id),by(department_id)
+egen number_of_reorders=sum(reordered),by(department_id)
+gen number_of_first_orders=number_of_orders-number_of_reorders
+get percentage=number_of_first_orders/number_of_orders
+sample 1,c by(department_id)
+export excel using report.cvs
